@@ -1,0 +1,625 @@
+excerise -7:-
+============
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: MyHomePage(),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  TextEditingController h1 = TextEditingController();
+  TextEditingController s1 = TextEditingController();
+  int res = 0;
+  double h = 0.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Heart Rate Based Healthcare")),
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: TextField(
+              controller: h1,
+              decoration: InputDecoration(
+                label: Text("HeartRate"),
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ),
+          SizedBox(height: 10),
+          Slider(
+            min: 0,
+            max: 200,
+            value: h,
+            onChanged: (a) {
+              setState(() {
+                h = a;
+                h1.text = h.toStringAsFixed(0);
+              });
+            },
+            divisions: 200,
+            label: "$h",
+          ),
+          SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: submit,
+            child: Text("Submit"),
+          ),
+          SizedBox(height: 10),
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: TextField(
+              controller: s1,
+              decoration: InputDecoration(
+                label: Text("Suggestion"),
+                border: OutlineInputBorder(),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  void submit() {
+    setState(() {
+      res = int.parse(h1.text);
+      if (res >= 0 && res <= 60) {
+        s1.text = "Very Low and Weak";
+      } else if (res > 60 && res <= 90) {
+        s1.text = "Normal";
+      } else if (res > 90 && res <= 120) {
+        s1.text = "High, Follow Diet";
+      } else if (res > 120) {
+        s1.text = "Very high, Contact Doctor";
+      }
+    });
+  }
+}
+========================================================================================================
+excerise:8:-
+main.dart:-
+
+
+import 'package:flutter_application_8/second.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+ 
+void main() {
+  runApp(
+    MaterialApp(
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const MyApp(),
+        '/second': (context) => const Second(),
+      },
+    ),
+  );
+}
+
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final TextEditingController rno = TextEditingController();
+  final TextEditingController uname = TextEditingController();
+  final TextEditingController pwd = TextEditingController();
+  final TextEditingController m = TextEditingController();
+
+  @override
+  void dispose() {
+    rno.dispose();
+    uname.dispose();
+    pwd.dispose();
+    m.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("MCA_LAB User Registration")),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: TextField(
+                controller: rno,
+                decoration: const InputDecoration(
+                  label: Text("Roll No"),
+                  border: UnderlineInputBorder(),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: TextField(
+                controller: uname,
+                decoration: const InputDecoration(
+                  label: Text("Username"),
+                  border: UnderlineInputBorder(),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: TextField(
+                controller: pwd,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  label: Text("Password"),
+                  border: UnderlineInputBorder(),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: TextField(
+                controller: m,
+                decoration: const InputDecoration(
+                  label: Text("Email_id"),
+                  border: UnderlineInputBorder(),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () async {
+                SharedPreferences sh = await SharedPreferences.getInstance();
+                await sh.setString("roll", rno.text);
+                await sh.setString("name", uname.text);
+                await sh.setString("pass", pwd.text);
+                await sh.setString("email", m.text);
+                if (!mounted) return;
+                Navigator.pushNamed(context, '/second');
+              },
+              child: const Text("Submit"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+-----------------------------------
+second.dart:-
+
+
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class Second extends StatefulWidget {
+  const Second({super.key});
+
+  @override
+  State<Second> createState() => _SecondState();
+}
+
+class _SecondState extends State<Second> {
+  final TextEditingController r = TextEditingController();
+  final TextEditingController u = TextEditingController();
+  final TextEditingController p = TextEditingController();
+  final TextEditingController ma = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    create();
+  }
+
+  Future<void> create() async {
+    SharedPreferences sh1 = await SharedPreferences.getInstance();
+    String r1 = sh1.getString("roll") ?? "";
+    String n1 = sh1.getString("name") ?? "";
+    String p1 = sh1.getString("pass") ?? "";
+    String e1 = sh1.getString("email") ?? "";
+
+    if (!mounted) return;
+    setState(() {
+      r.text = r1;
+      u.text = n1;
+      p.text = p1;
+      ma.text = e1;
+    });
+  }
+
+  @override
+  void dispose() {
+    r.dispose();
+    u.dispose();
+    p.dispose();
+    ma.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("MCA_LAB Registered Data")),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: TextField(
+                controller: r,
+                decoration: const InputDecoration(
+                  label: Text("Roll No"),
+                  border: UnderlineInputBorder(),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: TextField(
+                controller: u,
+                decoration: const InputDecoration(
+                  label: Text("Username"),
+                  border: UnderlineInputBorder(),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: TextField(
+                controller: p,
+                // obscureText removed -> password shows as plain text
+                decoration: const InputDecoration(
+                  label: Text("Password"),
+                  border: UnderlineInputBorder(),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: TextField(
+                controller: ma,
+                decoration: const InputDecoration(
+                  label: Text("Email_id"),
+                  border: UnderlineInputBorder(),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+============================================================================
+9th excerise:-
+
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => MyApp1();
+}
+
+class MyApp1 extends State<MyApp> {
+  VideoPlayerController? controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = VideoPlayerController.networkUrl(
+      Uri.parse(
+        'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4',
+      ),
+    );
+    controller!.initialize().then((_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    controller?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: const Text("Media")),
+        body: Column(
+          children: [
+            if (controller != null && controller!.value.isInitialized)
+              AspectRatio(
+                aspectRatio: controller!.value.aspectRatio,
+                child: VideoPlayer(controller!),
+              )
+            else
+              const Center(child: CircularProgressIndicator()),
+            const SizedBox(height: 100),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            setState(() {
+              if (controller!.value.isPlaying) {
+                controller!.pause();
+              } else {
+                controller!.play();
+              }
+            });
+          },
+          child: Icon(
+            controller!.value.isPlaying ? Icons.pause : Icons.play_arrow,
+          ),
+        ),
+      ),
+    );
+  }
+}
+===========================================================================
+10th excersise;-
+
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(
+    const MaterialApp(debugShowCheckedModeBanner: false, home: QuizPage()),
+  );
+}
+
+class QuizQuestion {
+  final String question;
+  final List<String> options;
+  final String correctAnswer;
+  final String imageUrl;
+  final IconData fallbackIcon;
+
+  const QuizQuestion({
+    required this.question,
+    required this.options,
+    required this.correctAnswer,
+    required this.imageUrl,
+    required this.fallbackIcon,
+  });
+}
+
+class QuizPage extends StatefulWidget {
+  const QuizPage({super.key});
+
+  @override
+  State<QuizPage> createState() => _QuizPageState();
+}
+
+class _QuizPageState extends State<QuizPage> {
+  final List<QuizQuestion> questions = const [
+    QuizQuestion(
+      question: "How many colors are there in a rainbow?",
+      options: ["4", "7", "9", "5"],
+      correctAnswer: "7",
+      imageUrl:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrc_JegXG5CbXoUUkri56u2A-3nFXErfuyPw&usqp=CAU",
+      fallbackIcon: Icons.color_lens,
+    ),
+    QuizQuestion(
+      question: "How many consonants are there in the English alphabet?",
+      options: ["26", "23", "21", "18"],
+      correctAnswer: "21",
+      imageUrl:
+          "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&q=80",
+      fallbackIcon: Icons.menu_book,
+    ),
+    QuizQuestion(
+      question: "Which continent is known as the 'Dark Continent'?",
+      options: ["South America", "Africa", "Australia", "Asia"],
+      correctAnswer: "Africa",
+      imageUrl:
+          "https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=600&q=80",
+      fallbackIcon: Icons.public,
+    ),
+    QuizQuestion(
+      question: "How many years are there in a millennium?",
+      options: ["10", "100", "1000", "1050"],
+      correctAnswer: "1000",
+      imageUrl:
+          "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=600&q=80",
+      fallbackIcon: Icons.calendar_today,
+    ),
+  ];
+
+  int currentQuestionIndex = 0;
+  int score = 0;
+  String? selectedAnswer;
+  bool quizFinished = false;
+
+  void submitAnswer() {
+    if (selectedAnswer == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please select an answer first.")),
+      );
+      return;
+    }
+
+    setState(() {
+      if (selectedAnswer == questions[currentQuestionIndex].correctAnswer) {
+        score++;
+      }
+
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        selectedAnswer = null;
+      } else {
+        quizFinished = true;
+      }
+    });
+  }
+
+  void restartQuiz() {
+    setState(() {
+      currentQuestionIndex = 0;
+      score = 0;
+      selectedAnswer = null;
+      quizFinished = false;
+    });
+  }
+
+  Widget buildQuestionImage(QuizQuestion question) {
+    return Center(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Image.network(
+          question.imageUrl,
+          width: 220,
+          height: 150,
+          fit: BoxFit.cover,
+          loadingBuilder: (context, child, progress) {
+            if (progress == null) return child;
+
+            return SizedBox(
+              width: 220,
+              height: 150,
+              child: Center(
+                child: CircularProgressIndicator(
+                  value: progress.expectedTotalBytes != null
+                      ? progress.cumulativeBytesLoaded /
+                            progress.expectedTotalBytes!
+                      : null,
+                ),
+              ),
+            );
+          },
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              width: 220,
+              height: 150,
+              color: Colors.grey.shade200,
+              alignment: Alignment.center,
+              child: Icon(
+                question.fallbackIcon,
+                size: 70,
+                color: Colors.blueGrey,
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (quizFinished) {
+      return Scaffold(
+        appBar: AppBar(title: const Text("Final Page")),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.emoji_events, size: 90, color: Colors.amber),
+              const SizedBox(height: 20),
+              Text(
+                "Your mark is $score / ${questions.length}",
+                style: const TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: restartQuiz,
+                child: const Text("RESTART QUIZ"),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final question = questions[currentQuestionIndex];
+
+    return Scaffold(
+      appBar: AppBar(title: Text("Question ${currentQuestionIndex + 1}")),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Question ${currentQuestionIndex + 1} of ${questions.length}",
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 16),
+              buildQuestionImage(question),
+              const SizedBox(height: 20),
+              Text(
+                question.question,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 21,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+              ...question.options.map(
+                (option) => RadioListTile<String>(
+                  title: Text(option),
+                  value: option,
+                  groupValue: selectedAnswer,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedAnswer = value;
+                    });
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: submitAnswer,
+                child: Text(
+                  currentQuestionIndex == questions.length - 1
+                      ? "FINISH"
+                      : "NEXT",
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+============================================================
